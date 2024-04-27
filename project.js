@@ -15,8 +15,11 @@ function isValidUnixTimestamp(timestamp) {
     
     return true;
 }
+app.use(express.static("./public"));
 
-
+app.get("/", function (req, res) {
+    res.send("index.html");
+});
 
 app.get("/api/:date?", function (req, res) {
     const {date} = req.params;
