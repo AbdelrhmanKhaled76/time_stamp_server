@@ -18,7 +18,7 @@ function isValidUnixTimestamp(timestamp) {
 app.use(express.static("./public"));
 
 app.get("/", function (req, res) {
-    res.send("index.html");
+    res.sendFile(__dirname + '/views/index.html');
 });
 
 app.get("/api/:date?", function (req, res) {
