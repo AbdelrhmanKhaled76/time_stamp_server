@@ -23,7 +23,13 @@ app.get("/", function (req, res) {
 
 app.get("/api/:date?", function (req, res) {
     const {date} = req.params;
-    const numdate =  Number(date);
+    if(isNaN(date)){
+        var mdate =  Date.parse(date);
+    }
+    else {
+        mdate = date;
+    }
+    var numdate =  Number(mdate);
     const valid = isValidUnixTimestamp(Math.floor(numdate / 1000));
     
     if(numdate && valid){
