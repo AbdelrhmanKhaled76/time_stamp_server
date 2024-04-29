@@ -1,7 +1,8 @@
 var express = require('express');
 var app = express();
 
-app.use(express.static('public'));
+app.use(express.static("./public"));
+app.use(express.static("./views"));
 
 function isValidUnixTimestamp(timestamp) {
     if (typeof timestamp !== 'number' || timestamp < 0) {
@@ -15,7 +16,6 @@ function isValidUnixTimestamp(timestamp) {
     
     return true;
 }
-app.use(express.static("./public"));
 
 app.get("/", function (req, res) {
     res.sendFile(__dirname + '/views/index.html');
