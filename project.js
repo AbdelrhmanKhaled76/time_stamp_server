@@ -4,49 +4,46 @@ var app = express();
 app.use(express.static("./public"));
 app.use(express.static("./views"));
 
-function isValidUnixTimestamp(timestamp) {
-    if (typeof timestamp !== 'number' || timestamp < 0) {
-        return false;
-    }
-    
-    const maxUnixTimestamp = Math.pow(2, 31) - 1;
-    if (timestamp > maxUnixTimestamp) {
-        return false;
-    }
-    
-    return true;
+function handleDate(date) {
+  const realDate = new Date(date);
+  if (!date) {
+    const now = new Date();
+    return {
+      unix: now.getTime(),
+      utc: now.toUTCString(),
+    };
+  } else if (realDate != "Invalid Date") {
+    return {
+      unix: realDate.getTime(),
+      utc: realDate.toUTCString(),
+    };
+  } else {
+    return {
+      error: "Invalid Date",
+    };
+  }
 }
 
-app.get("/", function (req, res) {
-    res.sendFile(__dirname + '/views/index.html');
+app.use(cors({ optionsSuccessStatus: 200 }));
+
+app.use(express.static("public"));
+
+app.get("/api/:date", function (req, res) {
+  let { date } = req.params;
+  /^\d+$/.test(date) ? (date = parseInt(date)) : date;
+  res.json(handleDate(date));
 });
 
-app.get("/api/:date?", function (req, res) {
-    const {date} = req.params;
-    if(!date){
-        const real = new Date().toUTCString();
-        res.json({"unix":Number(Date.parse(real)),"utc" : real});
-    }
-    if(isNaN(date)){
-        var mdate =  Date.parse(date);
-    }
-    else {
-        mdate = date;
-    }
-    var numdate =  Number(mdate);
-    const valid = isValidUnixTimestamp(Math.floor(numdate / 1000));
-    
-    if(numdate && valid){
-    const real = new Date(numdate).toUTCString();
-    res.json({"unix":numdate,"utc":real});
-    }
-        res.json({ error : "Invalid Date" })
+app.get("/api/", function (req, res) {
+  const now = new Date();
+  res.json({
+    unix: now.getTime(),
+    utc: now.toUTCString(),
+  });
 });
 
-
-
-var listener = app.listen(process.env.PORT || 3000, function () {
-    console.log('Your app is listening on port ' + listener.address().port);
+let listener = app.listen(process.env.PORT || 3000, function () {
+  console.log("Your app is listening on port " + listener.address().port);
 });
 
 //its all done
